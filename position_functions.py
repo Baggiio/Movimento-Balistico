@@ -1,4 +1,11 @@
 import numpy as np
+import math as m
+
+def mod(Vx, Vy):
+    return m.sqrt((Vx**2) + (Vy**2))
+
+def velocidade(V0, g, t):
+    return (V0 - (g*t))
 
 def svt(S0, v, t):
     return (S0 + (v*t))
