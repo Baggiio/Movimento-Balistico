@@ -1,6 +1,24 @@
 import numpy as np
 import math as m
-import position_functions as pf
+
+def mod(Vx, Vy):
+    return m.sqrt((Vx**2) + (Vy**2))
+
+def velocidade(V0, g, t):
+    return (V0 - (g*t))
+
+def svt(S0, v, t):
+    return (S0 + (v*t))
+
+def svt2(S0, v, t, g):
+    return (S0 + (v*t) - ((g*(t**2))/2))
+
+def t_trajetoria(S0y, Sfy, Vy, g):
+    a = g/2
+    b = -(Vy)
+    c = (Sfy - S0y)
+    p = np.array([a, b, c])
+    return np.roots(p)[0]
 
 if __name__ == "__main__":
 
@@ -47,7 +65,7 @@ if __name__ == "__main__":
         elif option == "2":
             Vx = float(input("\nInsira Vx inicial do lançamento: "))/v_aux
             Vy = float(input("Insira Vy inicial do lançamento: "))/v_aux
-            Vr = pf.mod(Vx, Vy)
+            Vr = mod(Vx, Vy)
             a = np.rad2deg(np.arctan([Vy/Vx]))
             break
         else:
@@ -62,11 +80,12 @@ if __name__ == "__main__":
             break
         elif option == "2":
             t_queda = float(input("Insira o tempo de queda (em segundos): "))
-            S0y = abs(pf.svt2(0, 0, t_queda, g))
+            S0y = abs(svt2(0, 0, t_queda, g))
             break
         else:
             print("Essa alternativa não é válida. Tente novamente.\n"); continue
     # Sfy = float(input("Insira a altura final do lançamento (em metros): "))
+    Sfy = 0
 
     print("\nDeseja calcular a trajetória em um instante de tempo específico?")
     print("1) Sim\t 2) Não")
@@ -74,10 +93,10 @@ if __name__ == "__main__":
         option = input("Insira a opção desejada: ")
         if option == "1":
             td = float(input("Insira o instante Td (em segundos): "))
-            distancia_td = pf.svt(0, Vx, td)
-            h_td = pf.svt2(S0y, Vy, td, g)
-            vy_td = pf.velocidade(Vy, g, td)
-            vmod_td = pf.mod(Vx, vy_td)
+            distancia_td = svt(0, Vx, td)
+            h_td = svt2(S0y, Vy, td, g)
+            vy_td = velocidade(Vy, g, td)
+            vmod_td = mod(Vx, vy_td)
             break
         elif option == "2":
             td = None
@@ -86,20 +105,20 @@ if __name__ == "__main__":
             print("Essa alternativa não é válida. Tente novamente.\n"); continue
 
     t_hmax = Vy/g
-    hmax = pf.svt2(S0y, Vy, t_hmax, g)
-    vy_hmax = pf.velocidade(Vy, g, t_hmax)
-    vmod_hmax = pf.mod(Vx, vy_hmax)
+    hmax = svt2(S0y, Vy, t_hmax, g)
+    vy_hmax = velocidade(Vy, g, t_hmax)
+    vmod_hmax = mod(Vx, vy_hmax)
 
-    t_total = pf.t_trajetoria(S0y, 0, Vy, g)
-    distancia_total = pf.svt(0, Vx, t_total)
-    vy_ttotal = pf.velocidade(Vy, g, t_total)
-    vmod_ttotal = pf.mod(Vx, vy_ttotal)
+    t_total = t_trajetoria(S0y, Sfy, Vy, g)
+    distancia_total = svt(0, Vx, t_total)
+    vy_ttotal = velocidade(Vy, g, t_total)
+    vmod_ttotal = mod(Vx, vy_ttotal)
 
     # print("\nAltura máxima %.2fm no instante t = %.2f" % (hmax, t_hmax))
     # print("Distância total %.2fm no instante t = %.2f" % (distancia_total, t_total))
     # print("V = %.2f\t Vx = %.2f\t Vy = %.2f\t â = %.2f\t" % (Vr, Vx, Vy, a))
 
-    print("\n===== RESPOSTAS: =====\n")
+    print("\n============== RESPOSTAS: ==============\n")
     print("a) Calcule as componentes nos eixos x e y da velocidade inicial do objeto.")
     print("V0x = %.3f m/s;\t V0y = %.3f m/s\n" % (Vx, Vy))
 
@@ -113,7 +132,7 @@ if __name__ == "__main__":
         print("d) Calcule a velocidade e suas componentes nos eixos x e y no instante td = %.3f s." % (td))
         print("Vx = %.3f m/s;\t Vy = %.3f m/s;\t |v| = %.3f m/s\n" % (Vx, vy_td, vmod_td))
     
-    print("e) Ache a altura máxima alcançada pela bola.")
+    print("e) Ache a altura máxima alcançada pelo objeto.")
     print("%.3f m\n" % (hmax))
 
     print("f) Ache o alcance horizontal — ou seja, a distância entre o ponto inicial e o ponto onde o objeto atinge o solo.")
